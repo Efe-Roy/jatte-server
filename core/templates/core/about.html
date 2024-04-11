@@ -1,5 +1,143 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-<h1 class="mb-6 text-2xl">About</h1>
+<div>
+    <div id="chat_log" class="mb-4 p-4 bg-gray-100 rounded-xl h-[300px] overflow-scroll">
+        <p>Welcome to our chat! Please type your message and wait for an agent to join...</p>
+    </div>
+
+    <input type="text" name="body" id="chat_message_input" class="w-full mb-4 p-4 bg-gray-100 rounded-xl" placeholder="Type your message...">
+    <button id="chat_message_submit" class="py-2 px-6 bg-rose-600 text-white rounded-xl">Send</button>
+</div>
 {% endblock %}
+
+{% block scripts %}
+    <script>
+        let chatSocket = null
+
+        /**
+         * Elements
+        */
+        const chatLogElement = document.querySelector('#chat_log')
+        const chatInputElement = document.querySelector('#chat_message_input')
+        const chatSubmitElement = document.querySelector('#chat_message_submit')
+        
+        /**
+         * Functions
+         */
+        
+        function scrollToBottom() {
+            chatLogElement.scrollTop = chatLogElement.scrollHeight
+        }
+
+        function sendMessage() {
+            chatSocket.send(JSON.stringify({
+                message: chatInputElement.value,
+                room_name: '892bb87c-9ea8-43b5-8e0d-a9892781e6cd',
+                sender: "Admin",
+            }))
+
+            chatInputElement.value = ''
+        }
+
+
+        /**
+         * Web socket
+         */
+
+        const socketURL = `ws://${window.location.host}/ws/chat/892bb87c-9ea8-43b5-8e0d-a9892781e6cd/`;
+        console.log("Establishing Socket Connection")
+        chatSocket = new WebSocket(socketURL)
+
+        // Recieve Message from the backend
+        chatSocket.onmessage = function(e) {
+            console.log('on message')
+            // onChatMessage(JSON.parse(e.data))
+
+            const data = JSON.parse(e.data)["message"]
+
+            console.log("ccc", data);
+
+            let sender = data["sender"]
+            let content = data["message"]
+
+            if (sender == "{{user}}") {
+                document.getElementById("message").value = ""
+            }
+
+            if (sender == "{{user}}") {
+                chatLogElement.innerHTML += `
+                    <div class="flex w-full mt-2 space-x-3 max-w-md">
+                        <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-300 text-center pt-2">Me</div>
+
+                        <div>
+                            <div class="bg-gray-300 p-3 rounded-l-lg rounded-br-lg">
+                                <p class="text-sm">${content}</p>
+                            </div>
+                            
+                            <span class="text-xs text-gray-500 leading-none hidden">${data.created_at} ago</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                chatLogElement.innerHTML += `
+                    <div class="flex w-full mt-2 space-x-3 max-w-md">
+                        <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-300 text-center text-xs pt-2">${sender}</div>
+
+                        <div>
+                            <div class="bg-gray-300 p-3 rounded-l-lg rounded-br-lg">
+                                <p class="text-sm">${content}</p>
+                            </div>
+                            
+                            <span class="text-xs text-gray-500 leading-none hidden">${data.created_at} ago</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            scrollToBottom();
+        }
+
+        chatSocket.onopen = function(e) {
+            console.log('on open')
+
+            scrollToBottom()
+        }
+
+        chatSocket.onclose = function(e) {
+            console.log('chat socket closed unexpectadly')
+        }
+
+
+        /**
+         * Event listeners
+         */
+
+        // Send Message to the backend
+        chatSubmitElement.onclick = function(e) {
+            e.preventDefault()
+            console.log("Sending Message")
+            
+            sendMessage();
+
+            return false
+        }
+
+        // chatInputElement.onkeyup = function(e) {
+        //     if (e.keyCode == 13) {
+        //         sendMessage()
+        //     }
+        // }
+
+        // chatInputElement.onfocus = function(e) {
+        //     chatSocket.send(JSON.stringify({
+        //         'type': 'update',
+        //         'message': 'writing_active',
+        //         'name': document.querySelector('#user_name').textContent.replaceAll('"', ''),
+        //         'agent': document.querySelector('#user_id').textContent.replaceAll('"', ''),
+        //     }))
+        // }
+
+    </script>
+{% endblock %}
+

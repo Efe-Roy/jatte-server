@@ -2,12 +2,13 @@ import json
 
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
+# from channels.db import database_sync_to_async
 
 from django.utils.timesince import timesince
 
 from account.models import User
 
-from .models import Room, Message
+from .models import Room, Message, MsgChat
 from .templatetags.chatextras import initials
 
 
@@ -31,14 +32,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 }
             )
     
-    
     async def disconnect(self, close_code):
         # Leave room
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
         if not self.user.is_staff:
             await self.set_room_closed()
-
 
     async def receive(self, text_data):
         # Receive message from WebSocket (front end)
@@ -77,7 +76,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 }
             )
 
-    
     async def chat_message(self, event):
         # Send message to WebSocket (front end)
         await self.send(text_data=json.dumps({
@@ -89,7 +87,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'created_at': event['created_at'],
         }))
 
-    
     async def writing_active(self, event):
         # Send writing is active to room
         await self.send(text_data=json.dumps({
@@ -100,25 +97,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'initials': event['initials'],
         }))
     
-
     async def users_update(self, event):
         # Send information to the web socket (front end)
         await self.send(text_data=json.dumps({
             'type': 'users_update'
         }))
 
-    
     @sync_to_async
     def get_room(self):
         self.room = Room.objects.get(uuid=self.room_name)
 
-    
     @sync_to_async
     def set_room_closed(self):
         self.room = Room.objects.get(uuid=self.room_name)
         self.room.status = Room.CLOSED
         self.room.save()
-
 
     @sync_to_async
     def create_message(self, sent_by, message, agent):
@@ -131,3 +124,47 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.room.messages.add(message)
 
         return message
+    
+
+
+class NotificationConsumer(AsyncWebsocketConsumer):
+
+    async def connect(self):
+        self.room_name = f"room_{self.scope['url_route']['kwargs']['room_name']}"
+        await self.channel_layer.group_add(self.room_name, self.channel_name)
+        await self.accept()
+
+    async def disconnect(self, code):
+        await self.channel_layer.group_discard(self.room_name, self.channel_name)
+        self.close(code)
+
+    async def receive(self, text_data):
+        # print("Recieved Data")
+        data_json = json.loads(text_data)
+        # print(data_json)
+
+        event = {"type": "send_message", "message": data_json}
+
+        await self.channel_layer.group_send(self.room_name, event)
+
+    async def send_message(self, event):
+        data = event["message"]
+        # print("Hope", data)
+        await self.create_message(data=data)
+
+        response = {"sender": data["sender"], "message": data["message"]}
+
+        await self.send(text_data=json.dumps({"message": response}))
+
+    @sync_to_async
+    def create_message(self, data):
+        get_user = User.objects.get(id=data["room_name"])
+
+        if not MsgChat.objects.filter(
+            message=data["message"], sender=data["sender"]
+        ).exists():
+            new_message = MsgChat.objects.create(
+                client=get_user, message=data["message"], sender=data["sender"]
+            )
+
+        return "created successfully"

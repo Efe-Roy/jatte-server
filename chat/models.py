@@ -38,5 +38,14 @@ class Room(models.Model):
     class Meta:
         ordering = ('-created_at',)
     
+# class MsgRoom(models.Model):
+#     room_user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
+
+class MsgChat(models.Model):
+    client = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    sender = models.CharField(max_length=50, blank=True, null=True)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+
     def __str__(self):
-        return f'{self.client} - {self.uuid}'
+        return f"{str(self.client)} - {self.sender}"

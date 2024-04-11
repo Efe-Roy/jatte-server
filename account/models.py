@@ -3,6 +3,7 @@ import uuid
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 
 class CustomUserManager(UserManager):
@@ -27,6 +28,8 @@ class CustomUserManager(UserManager):
         extra_fields.setdefault('is_superuser', True)
         return self._create_user(name, email, password, **extra_fields)
 
+def upload_to(instance, filename):
+    return 'profile/{filename}'.format(filename=filename)
 
 class User(AbstractBaseUser, PermissionsMixin):
     AGENT = 'agent'
@@ -45,6 +48,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
+
+    is_admin = models.BooleanField(default=False)
+    is_vendor = models.BooleanField(default=False)
+    is_client = models.BooleanField(default=False)
+    is_rider = models.BooleanField(default=False)
+    acc_balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    phone_num = models.CharField(max_length=300, null=True, blank=True)
+    image = models.ImageField(_("Image"), upload_to=upload_to, null=True, blank=True)
 
     date_joined = models.DateTimeField(default=timezone.now)
     last_login = models.DateTimeField(blank=True, null=True)
