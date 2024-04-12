@@ -22,6 +22,7 @@
         const chatInputElement = document.querySelector('#chat_message_input')
         const chatSubmitElement = document.querySelector('#chat_message_submit')
         
+        const userID = '943128ac-92aa-4d1d-8448-0c31f12bbd58'
         /**
          * Functions
          */
@@ -33,7 +34,7 @@
         function sendMessage() {
             chatSocket.send(JSON.stringify({
                 message: chatInputElement.value,
-                room_name: '892bb87c-9ea8-43b5-8e0d-a9892781e6cd',
+                room_name: userID,
                 sender: "Admin",
             }))
 
@@ -45,7 +46,7 @@
          * Web socket
          */
 
-        const socketURL = `ws://${window.location.host}/ws/chat/892bb87c-9ea8-43b5-8e0d-a9892781e6cd/`;
+        const socketURL = `ws://${window.location.host}/ws/chat/${userID}/`;
         console.log("Establishing Socket Connection")
         chatSocket = new WebSocket(socketURL)
 

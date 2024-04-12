@@ -3,7 +3,7 @@ import json
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 # from channels.db import database_sync_to_async
-
+import uuid
 from django.utils.timesince import timesince
 
 from account.models import User
@@ -158,7 +158,12 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 
     @sync_to_async
     def create_message(self, data):
-        get_user = User.objects.get(id=data["room_name"])
+        print("hh", data)
+        room_name = data.get("room_name")
+        uuid_obj = uuid.UUID(room_name)
+        print("UUID:", uuid_obj)
+        get_user = User.objects.get(id=uuid_obj)
+        print("user profile", get_user)
 
         if not MsgChat.objects.filter(
             message=data["message"], sender=data["sender"]
@@ -167,4 +172,4 @@ class NotificationConsumer(AsyncWebsocketConsumer):
                 client=get_user, message=data["message"], sender=data["sender"]
             )
 
-        return "created successfully"
+        # return "created successfully"
