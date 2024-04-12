@@ -3,7 +3,7 @@ import json
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 # from channels.db import database_sync_to_async
-# import uuid
+import uuid
 from django.utils.timesince import timesince
 
 from account.models import User
@@ -159,9 +159,9 @@ class NotificationConsumer(AsyncWebsocketConsumer):
     @sync_to_async
     def create_message(self, data):
         print("hh", data)
-        # room_name = data.get("room_name")
-        # uuid_obj = uuid.UUID(room_name)
-        # print("UUID:", uuid_obj)
+        room_name = data.get("room_name")
+        uuid_obj = uuid.UUID(room_name)
+        print("UUID:", uuid_obj)
         # get_user = User.objects.get(id=room_name)
         # print("user profile", get_user)
 
