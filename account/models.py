@@ -1,4 +1,4 @@
-import uuid
+# import uuid
 
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 from django.db import models
@@ -40,7 +40,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         (MANAGER, 'Manager'),
     )
     
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(unique=True)
     name = models.CharField(max_length=255, blank=True, default='')
     role = models.CharField(max_length=20, choices=ROLES_CHOICES, default=AGENT)
