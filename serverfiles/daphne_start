@@ -8,4 +8,4 @@ source ../env/bin/activate
 export DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
 export PYTHONPATH=$DJANGODIR:$PYTHONPATH
 
-daphne -b 0.0.0.0 -p 8002 jatte.asgi:application
+daphne -b 0.0.0.0 -p 8001 jatte.asgi:application

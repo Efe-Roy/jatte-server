@@ -101,9 +101,9 @@ ASGI_APPLICATION = 'jatte.asgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'jatte',
-        'USER': 'jatte',
-        'PASSWORD': 'jatte',
+        'NAME': 'jatte2',
+        'USER': 'jatte2',
+        'PASSWORD': 'jatte2',
         'HOST': 'localhost',
         'PORT': ''
     }
