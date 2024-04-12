@@ -163,11 +163,11 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         get_user = User.objects.get(id=room_name)
         print("user profile", get_user)
 
-        # if not MsgChat.objects.filter(
-        #     message=data["message"], sender=data["sender"]
-        # ).exists():
-        #     new_message = MsgChat.objects.create(
-        #         client=get_user, message=data["message"], sender=data["sender"]
-        #     )
+        if not MsgChat.objects.filter(
+            message=data["message"], sender=data["sender"]
+        ).exists():
+            new_message = MsgChat.objects.create(
+                client=get_user, message=data["message"], sender=data["sender"]
+            )
 
         # return "created successfully"
