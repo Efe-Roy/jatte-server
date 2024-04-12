@@ -162,8 +162,8 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         room_name = data.get("room_name")
         uuid_obj = uuid.UUID(room_name)
         print("UUID:", uuid_obj)
-        # get_user = User.objects.get(id=room_name)
-        # print("user profile", get_user)
+        get_user = User.objects.get(id=uuid_obj)
+        print("user profile", get_user)
 
         # if not MsgChat.objects.filter(
         #     message=data["message"], sender=data["sender"]
