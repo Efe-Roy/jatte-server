@@ -7,12 +7,34 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST
 
+from rest_framework import generics, status
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from .serializers import MsgChatSerializer
+
 from account.forms import AddUserForm, EditUserForm
 from account.models import User
 
-from .models import Room
+from .models import Room, MsgChat
 
+class CustomPageNumberPagination(PageNumberPagination):
+    page_size_query_param = 'PageSize'
 
+class MessageListView(generics.ListAPIView):
+    permission_classes = (AllowAny, )
+    serializer_class = MsgChatSerializer
+    pagination_class = CustomPageNumberPagination
+
+    def get_queryset(self):
+        queryset = MsgChat.objects.all()
+
+        # Filter based on request parameters
+        user_id = self.request.query_params.get('user_id', None)
+        if user_id:
+            queryset = queryset.filter(client=user_id)
+   
+        return queryset
+    
 @require_POST
 def create_room(request, uuid):
     name = request.POST.get('name', '')
