@@ -66,16 +66,20 @@ class MessageListView(generics.ListAPIView):
 class UpdateMsgStatusAPIView(APIView):
     def get(self, request, pk, role, format=None):
         user = User.objects.get(id=pk)
-        instances_msg = MsgChat.objects.filter(client=user)
 
         # print("role", role)
         if role == "client":
-            print("Client")
+            instances_msg = MsgChat.objects.filter(client=user, status="unread_client")
+            # print("Client")
+            for instance in instances_msg:
+                instance.status = "read"
+                instance.save()
         else:
-            print("Admin")
-        for instance in instances_msg:
-            instance.status = "read"
-            instance.save()
+            instances_msg = MsgChat.objects.filter(client=user, status="unread_admin")
+            # print("Admin")
+            for instance in instances_msg:
+                instance.status = "read"
+                instance.save()
 
         return Response("Successfully updated for instances", status=status.HTTP_200_OK)
     
