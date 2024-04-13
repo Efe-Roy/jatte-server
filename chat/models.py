@@ -43,17 +43,19 @@ class Room(models.Model):
 
 class MsgChat(models.Model):
     READ = 'read'
-    UNREAD = 'unread'
+    UNREAD_CLIENT = 'unread_client'
+    UNREAD_ADMIN = 'unread_admin'
 
     READ_RECEIPTS = (
         (READ, 'Read'),
-        (UNREAD, 'Unread'),
+        (UNREAD_CLIENT, 'Unread_client'),
+        (UNREAD_ADMIN, 'Unread_admin'),
     )
 
     client = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     sender = models.CharField(max_length=50, blank=True, null=True)
     message = models.TextField()
-    status = models.CharField(max_length=20, choices=READ_RECEIPTS, default=UNREAD)
+    status = models.CharField(max_length=20, choices=READ_RECEIPTS, default=UNREAD_CLIENT)
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
     def __str__(self):

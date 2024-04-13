@@ -7,6 +7,7 @@ app_name = 'chat'
 
 urlpatterns = [
     path('api/msg-list/', views.MessageListView.as_view()),
+    path('api/msg-list/update/<pk>/<role>/', views.UpdateMsgStatusAPIView.as_view()),
 
     path('api/create-room/<str:uuid>/', views.create_room, name='create-room'),
     path('chat-admin/', views.admin, name='admin'),

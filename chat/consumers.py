@@ -167,7 +167,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             message=data["message"], sender=data["sender"]
         ).exists():
             new_message = MsgChat.objects.create(
-                client=get_user, message=data["message"], sender=data["sender"]
+                client=get_user, message=data["message"], sender=data["sender"], status=data["status"]
             )
 
         # return "created successfully"

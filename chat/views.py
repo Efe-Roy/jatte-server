@@ -10,6 +10,8 @@ from django.views.decorators.http import require_POST
 from rest_framework import generics, status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from .serializers import MsgChatSerializer
 
 from account.forms import AddUserForm, EditUserForm
@@ -34,6 +36,48 @@ class MessageListView(generics.ListAPIView):
             queryset = queryset.filter(client=user_id)
    
         return queryset
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+
+        unread_msg_client = queryset.filter(status="unread_client").count()
+        unread_msg_admin = queryset.filter(status="unread_admin").count()
+
+        # Paginate the queryset
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            response_data = {
+                'results': serializer.data,
+                'unread_msg_client': unread_msg_client,
+                'unread_msg_admin': unread_msg_admin,
+            }
+            return self.get_paginated_response(response_data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        response_data = {
+            'results': serializer.data,
+            'unread_msg_client': unread_msg_client,
+            'unread_msg_admin': unread_msg_admin,
+        }
+
+        return Response(response_data)
+    
+class UpdateMsgStatusAPIView(APIView):
+    def get(self, request, pk, role, format=None):
+        user = User.objects.get(id=pk)
+        instances_msg = MsgChat.objects.filter(client=user)
+
+        # print("role", role)
+        if role == "client":
+            print("Client")
+        else:
+            print("Admin")
+        for instance in instances_msg:
+            instance.status = "read"
+            instance.save()
+
+        return Response("Successfully updated for instances", status=status.HTTP_200_OK)
     
 @require_POST
 def create_room(request, uuid):
