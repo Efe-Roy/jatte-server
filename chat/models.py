@@ -42,9 +42,18 @@ class Room(models.Model):
 #     room_user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
 
 class MsgChat(models.Model):
+    READ = 'read'
+    UNREAD = 'unread'
+
+    READ_RECEIPTS = (
+        (READ, 'Read'),
+        (UNREAD, 'Unread'),
+    )
+
     client = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     sender = models.CharField(max_length=50, blank=True, null=True)
     message = models.TextField()
+    status = models.CharField(max_length=20, choices=READ_RECEIPTS, default=UNREAD)
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
     def __str__(self):

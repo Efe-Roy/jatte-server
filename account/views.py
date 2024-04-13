@@ -61,9 +61,9 @@ class UserListView(generics.ListAPIView):
         queryset = User.objects.filter(is_superuser=False).order_by('-date_joined')
 
         # Filter based on request parameters
-        username = self.request.query_params.get('username', None)
-        if username:
-            queryset = queryset.filter(username__icontains=username)
+        name = self.request.query_params.get('name', None)
+        if name:
+            queryset = queryset.filter(name__icontains=name)
 
         is_active = self.request.query_params.get('is_active', False)
         if is_active:
