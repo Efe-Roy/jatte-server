@@ -28,7 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['jatte.fiscaliaycontraloria.com', '10.0.2.2', '143.198.143.239', 'subdomain.fiscaliaycontraloria.com']
 
-# SECURE_CROSS_ORIGIN_OPENER_POLICY = None
+SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 
 AUTH_USER_MODEL = 'account.User'
 
@@ -66,6 +66,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -184,3 +185,6 @@ AUTHENTICATION_BACKENDS = [
     # 'Auth.authentication.EmailAuthBackend',
 ]
 
+# CORS_ALLOWED_ORIGINS = [
+#     "https://subdomain.fiscaliaycontraloria.com",
+# ]
