@@ -47,7 +47,7 @@
          * Web socket
          */
 
-        const socketURL = `ws://${window.location.host}/ws/chat/${userID}/`;
+        const socketURL = `wss://${window.location.host}/ws/chat/${userID}/`;
         console.log("Establishing Socket Connection")
         chatSocket = new WebSocket(socketURL)
 
