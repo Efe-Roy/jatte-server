@@ -37,30 +37,17 @@ class MessageListView(generics.ListAPIView):
    
         return queryset
     
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
+class MessageCountView(APIView):
+    def get(self, request, format=None):
+        queryset = MsgChat.objects.all()
 
         unread_msg_client = queryset.filter(status="unread_client").count()
         unread_msg_admin = queryset.filter(status="unread_admin").count()
 
-        # Paginate the queryset
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            response_data = {
-                'results': serializer.data,
-                'unread_msg_client': unread_msg_client,
-                'unread_msg_admin': unread_msg_admin,
-            }
-            return self.get_paginated_response(response_data)
-
-        serializer = self.get_serializer(queryset, many=True)
         response_data = {
-            'results': serializer.data,
             'unread_msg_client': unread_msg_client,
             'unread_msg_admin': unread_msg_admin,
         }
-
         return Response(response_data)
     
 class UpdateMsgStatusAPIView(APIView):
