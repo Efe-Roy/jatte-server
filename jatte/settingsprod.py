@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-%v$gh67imza=0$i%pky!jxpk*@%t+x-w$lw5lmwbvj)+#p=r#g
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['jatte.fiscaliaycontraloria.com', '10.0.2.2', '143.198.143.239']
+ALLOWED_HOSTS = ['jatte.fiscaliaycontraloria.com', '10.0.2.2', '143.198.143.239', 'subdomain.fiscaliaycontraloria.com']
 
 SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 
