@@ -28,7 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['jatte.fiscaliaycontraloria.com', '10.0.2.2', '143.198.143.239', 'subdomain.fiscaliaycontraloria.com']
 
-SECURE_CROSS_ORIGIN_OPENER_POLICY = None
+# SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 
 AUTH_USER_MODEL = 'account.User'
 
